@@ -1,39 +1,45 @@
 // Test away
 import React from "react";
 import { render, fireEvent } from "@testing-library/react";
+import "@testing-library/jest-dom/extend-expect";
 
 import Controls from "../Controls/Controls";
 import Display from "./Display";
 
-test("Controls renders correctly", () => {
-  render(<Controls />);
+test("Display renders correctly", () => {
+  render(<Display />);
 });
 
-// test("Display if gate is open/closed and if it is locked/unlocked", () => {
-//   const displayOpenGate = jest.fn();
-
-//   const { getByText } = render(<Controls locked={false} locked={false} />);
-
-//   fireEvent.click(getByText(/open/i));
-//   expect(displayOpenGate).toHaveBeenCalledTimes(1);
-// });
-// test("Display if gate is open/closed and if it is locked/unlocked", () => {
-//   const displayOpenGate = jest.fn();
-
-//   const { getByText } = render(<Controls locked={false} closed={false} />);
-
-//   fireEvent.click(getByClass(/open/i));
-//   expect(displayOpenGate).toHaveBeenCalledTimes(0);
-// });
-
 test("Displays 'Closed' if the `closed` prop is `true`", () => {
+  const closedGate = jest.fn();
+
+  const { getByText } = render(<Display closed={true} />);
+
+  fireEvent.click(getByText(/Closed/i));
+  expect(closedGate).toHaveBeenCalledTimes(0);
+});
+
+test("Displays 'Locked' if the `locked` prop is `true`", () => {
   const lockedGate = jest.fn();
 
-  const { getByText } = render(
-    <Display toggleClosed={lockedGate} locked={false} closed={true} />
-  );
+  const { getByText } = render(<Display locked={true} />);
 
-  fireEvent.click(getByText(/open/i));
-  expect(lockedGate).toHaveBeenCalledTimes(1);
-  expect(lockedGate).toBeTruthy();
+  fireEvent.click(getByText(/Locked/i));
+  expect(lockedGate).toHaveBeenCalledTimes(0);
+});
+
+test("When locked or closed use the `red-led` class", () => {
+  const lockedOrClosed = jest.fn();
+
+  const { container } = render(<Display closed={true} />);
+
+  expect(container.firstChild.classList.contains(/red-led/i));
+});
+
+test("When unlocked or open use the `red-led` class", () => {
+  const lockedOrClosed = jest.fn();
+
+  const { container } = render(<Display locked={false} />);
+
+  expect(container.firstChild.classList.contains(/green-led/i));
 });
